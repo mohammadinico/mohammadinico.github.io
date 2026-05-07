@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Dinner for Charlotte 🌹</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #1a0a0a; font-family: Georgia, serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 1.5rem; }
+  h2 { color: #f5c0c8; font-weight: normal; font-size: 1rem; margin-bottom: 1rem; letter-spacing: 0.04em; opacity: 0.6; }
+  #controls { margin-bottom: 1.2rem; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  #controls button { padding: 7px 16px; border-radius: 999px; border: 1px solid rgba(220,100,120,0.4); background: transparent; color: rgba(245,192,200,0.5); font-family: Georgia,serif; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
+  #controls button.active { background: rgba(232,112,138,0.25); border-color: #e8708a; color: #f5c0c8; }
+  #generate-btn { padding: 12px 32px; background: linear-gradient(135deg,#c0394f,#e8708a); border: none; border-radius: 12px; color: #fff; font-size: 1rem; font-family: Georgia,serif; cursor: pointer; margin-bottom: 1.2rem; letter-spacing: 0.04em; }
+  #card { width: 420px; max-width: 100%; background: linear-gradient(145deg,#2a0e18,#1e0a12); border: 1px solid rgba(232,112,138,0.3); border-radius: 20px; padding: 24px; box-shadow: 0 0 60px rgba(200,60,90,0.2); display: none; }
+  #card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+  #card-header img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; object-position: center top; border: 2px solid rgba(232,112,138,0.7); }
+  #card-header .title { color: #f5c0c8; font-size: 1.1rem; font-weight: normal; letter-spacing: 0.03em; }
+  #card-header .sub { color: rgba(245,192,200,0.45); font-size: 0.75rem; margin-top: 3px; }
+  .meal { background: rgba(255,255,255,0.04); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; border-left: 2px solid rgba(232,112,138,0.4); }
+  .meal-name { color: #f5c0c8; font-size: 0.95rem; margin-bottom: 4px; }
+  .meal-desc { color: rgba(245,220,225,0.7); font-size: 0.8rem; line-height: 1.5; }
+  .meal-meta { color: rgba(232,112,138,0.6); font-size: 0.75rem; margin-top: 5px; }
+  #card-footer { margin-top: 14px; text-align: right; color: rgba(245,192,200,0.2); font-size: 0.7rem; }
+  #download-btn { margin-top: 1rem; padding: 11px 28px; background: transparent; border: 1px solid rgba(232,112,138,0.5); border-radius: 10px; color: #f5c0c8; font-family: Georgia,serif; font-size: 0.9rem; cursor: pointer; display: none; }
+  #download-btn:hover { background: rgba(232,112,138,0.1); }
+</style>
+</head>
+<body>
+
+<h2>What's for dinner, Charlotte? 🌹</h2>
+
+<div id="controls">
+  <button onclick="toggle(this)" data-tag="protein">High protein 💪</button>
+  <button onclick="toggle(this)" data-tag="quick">Quick &amp; easy ⚡</button>
+  <button onclick="toggle(this)" data-tag="veggie">Vegetarian 🥦</button>
+  <button onclick="toggle(this)" data-tag="lowcarb">Low carb 🥗</button>
+  <button onclick="toggle(this)" data-tag="comfort">Comfort food 🍲</button>
+</div>
+
+<button id="generate-btn" onclick="generate()">✨ Surprise Charlotte!</button>
+
+<div id="card">
+  <div id="card-header">
+    <img src="data:image/jpeg;base64,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" alt="Charlotte"/>
+    <div>
+      <div class="title">Tonight's dinner ideas 🍽️</div>
+      <div class="sub">picked with love for Charlotte ♡</div>
+    </div>
+  </div>
+  <div id="meals"></div>
+  <div id="card-footer">made with ♡ for Charlotte Stoffels</div>
+</div>
+
+<button id="download-btn" onclick="downloadImage()">⬇️ Save &amp; Send on WhatsApp</button>
+
+<script>
+const ALL_MEALS = [
+  { name:"🍗 Garlic Butter Chicken", desc:"Juicy chicken breast pan-fried in garlic herb butter, served with rice.", meta:"~35g protein · 20 min", tags:["protein","quick"] },
+  { name:"🐟 Oven-Baked Salmon", desc:"Salmon fillet with lemon, olive oil and garlic. Serve with roasted veggies.", meta:"~34g protein · 15 min", tags:["protein","quick","lowcarb"] },
+  { name:"🥩 Beef Stir-Fry", desc:"Ground beef with soy sauce, garlic and bell peppers over rice.", meta:"~30g protein · 20 min", tags:["protein","quick"] },
+  { name:"🍳 Shakshuka", desc:"Eggs poached in spiced tomato sauce — looks fancy, barely any effort.", meta:"~18g protein · 20 min", tags:["quick","veggie","comfort"] },
+  { name:"🥗 Greek Chicken Bowl", desc:"Grilled chicken, cucumber, tomato, feta and tzatziki over rice.", meta:"~38g protein · 25 min", tags:["protein","lowcarb"] },
+  { name:"🍜 Tuna Pasta", desc:"Canned tuna with pasta, olive oil, garlic and cherry tomatoes.", meta:"~28g protein · 15 min", tags:["quick","protein"] },
+  { name:"🌮 Turkey Wraps", desc:"Sliced turkey with hummus, spinach and veggies in a warm tortilla.", meta:"~25g protein · 10 min", tags:["quick","protein"] },
+  { name:"🍲 Lentil Dal", desc:"Red lentils simmered in coconut milk with garlic, cumin and tomato.", meta:"~18g protein · 30 min", tags:["veggie","comfort"] },
+  { name:"🥘 Chicken Thigh Traybake", desc:"Honey-garlic chicken thighs roasted with potatoes and veg — one tray, no fuss.", meta:"~32g protein · 40 min", tags:["protein","comfort"] },
+  { name:"🍣 Teriyaki Salmon Bowl", desc:"Pan-fried salmon with teriyaki glaze over steamed rice and edamame.", meta:"~36g protein · 20 min", tags:["protein","quick"] },
+  { name:"🥦 Veggie Omelette", desc:"Fluffy 3-egg omelette stuffed with spinach, mushrooms and melted cheese.", meta:"~22g protein · 10 min", tags:["quick","veggie","lowcarb","protein"] },
+  { name:"🍛 Chickpea Curry", desc:"Chickpeas in a creamy tomato-coconut curry sauce with naan bread.", meta:"~15g protein · 25 min", tags:["veggie","comfort"] },
+  { name:"🥩 Steak and Salad", desc:"Pan-seared steak with a simple rocket and parmesan salad.", meta:"~40g protein · 15 min", tags:["protein","quick","lowcarb"] },
+  { name:"🍝 Bolognese", desc:"Classic minced beef ragu slow-simmered with tomatoes over spaghetti.", meta:"~32g protein · 40 min", tags:["protein","comfort"] },
+  { name:"🫘 Black Bean Tacos", desc:"Spiced black beans with avocado, salsa and sour cream in corn tortillas.", meta:"~14g protein · 15 min", tags:["veggie","quick"] },
+  { name:"🍤 Prawn Stir-Fry", desc:"Juicy prawns with garlic, ginger, soy sauce and noodles.", meta:"~26g protein · 15 min", tags:["protein","quick"] },
+];
+
+const selected = new Set();
+
+function toggle(btn) {
+  const t = btn.dataset.tag;
+  if (selected.has(t)) { selected.delete(t); btn.classList.remove('active'); }
+  else { selected.add(t); btn.classList.add('active'); }
+}
+
+function generate() {
+  let pool = selected.size === 0
+    ? ALL_MEALS
+    : ALL_MEALS.filter(m => [...selected].some(t => m.tags.includes(t)));
+  if (pool.length < 4) pool = ALL_MEALS;
+
+  const shuffled = [...pool].sort(() => Math.random() - 0.5).slice(0, 4);
+
+  document.getElementById('meals').innerHTML = shuffled.map(m =>
+    '<div class="meal"><div class="meal-name">' + m.name + '</div><div class="meal-desc">' + m.desc + '</div><div class="meal-meta">' + m.meta + '</div></div>'
+  ).join('');
+
+  document.getElementById('card').style.display = 'block';
+  document.getElementById('download-btn').style.display = 'inline-block';
+}
+
+async function downloadImage() {
+  const card = document.getElementById('card');
+  const canvas = await html2canvas(card, { backgroundColor: '#1e0a12', scale: 2 });
+  const link = document.createElement('a');
+  link.download = 'dinner-for-charlotte.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+</script>
+</body>
+</html>
